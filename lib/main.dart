@@ -124,9 +124,9 @@ class _MyAppState extends State<MyApp> {
       },
       home: login == true
           ? DashboardScreen(
-              username: users[0],
-              password: users[1],
-              email: users[3],
+              username: users.isEmpty ? '' : users[0],
+              password: users.isEmpty ? '' : users[1],
+              email: users.isEmpty ? '' : users[2],
             )
           : LoginScreen(),
     );
