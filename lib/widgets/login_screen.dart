@@ -196,7 +196,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   // side: BorderSide(color: Colors.yellow, width: 5),
-                                  fixedSize: Size(200.0, 20.0),
+                                  fixedSize: Size(
+                                      MediaQuery.of(context).size.width, 20.0),
                                   backgroundColor: Colors.blueAccent,
                                   textStyle: const TextStyle(
                                       color: Colors.white,

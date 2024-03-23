@@ -1,14 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:FreightQuote/constants/utilizes.dart';
+import 'package:FreightQuote/controllers/freight_charge_header_controller.dart';
+import 'package:FreightQuote/controllers/freight_charge_detail_controller.dart';
+import 'package:FreightQuote/widgets/freight_charge_detail_screen.dart';
+import 'package:FreightQuote/widgets/freight_charge_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:FreightQuote/constants/style.dart';
 import 'package:FreightQuote/helpers/connecitivity_util.dart';
 import 'package:FreightQuote/widgets/correspondence_screen.dart';
 import 'package:FreightQuote/widgets/dashboard_screen.dart';
-import 'package:FreightQuote/widgets/freight_charge_screen.dart';
+import 'package:FreightQuote/widgets/freight_charge_header_screen.dart';
 import 'package:FreightQuote/widgets/login_screen.dart';
+import 'package:get/get.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -102,7 +107,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    Get.put(FreightChargeHeaderController());
+    Get.put(FreightChargeDetailController());
+    return GetMaterialApp(
       title: 'Freight Quotation',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -119,14 +126,16 @@ class _MyAppState extends State<MyApp> {
         DashboardScreen.routeName: (BuildContext context) =>
             DashboardScreen(username: '', password: '', email: ''),
         LoginScreen.routeName: (context) => LoginScreen(),
-        FreightChargeScreen.routeName: (context) => FreightChargeScreen(),
+        FreightChargeScreen.routeName: (context)=>const FreightChargeScreen(),
+        FreightChargeHeaderScreen.routeName: (context) => FreightChargeHeaderScreen(),
+        FreightChargeDetailScreen.routeName: (context)=>const FreightChargeDetailScreen(),
         CorrespondenceScreen.routeName: (context) => CorrespondenceScreen()
       },
       home: login == true
           ? DashboardScreen(
-              username: users[0],
-              password: users[1],
-              email: users[3],
+              username: users.isEmpty ? '' : users[0],
+              password: users.isEmpty ? '' : users[1],
+              email: users.isEmpty ? '' : users[2],
             )
           : LoginScreen(),
     );

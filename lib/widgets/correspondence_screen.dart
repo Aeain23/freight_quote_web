@@ -68,7 +68,9 @@ class _CorrespondenceScreenState extends State<CorrespondenceScreen> {
               child: TextField(
                 controller: controller,
                 cursorHeight: 20,
-                readOnly: date,
+                readOnly: controller == validDateAndQuotationDateController
+                    ? true
+                    : date,
                 minLines: 1,
                 maxLines: 6,
                 decoration: InputDecoration(
@@ -78,7 +80,28 @@ class _CorrespondenceScreenState extends State<CorrespondenceScreen> {
                           icon: Icon(Icons.calendar_today),
                           tooltip: 'Tap to open date picker',
                           onPressed: () {
-                            _selectDate(context, controller);
+                            _selectDate(context, controller, title)
+                                .then((value) {
+                              DateTime? valid;
+                              DateTime? quote;
+                              if (title == 'Validity Date') {
+                                validDateAndQuotationDateController.clear();
+
+                                valid = DateTime.parse(controller.text);
+                                quote = DateTime.parse(
+                                    quotationDateController.text);
+                              }
+                              if (title == "Quotation Date") {
+                                valid =
+                                    DateTime.parse(validDateController.text);
+                                quote = DateTime.parse(controller.text);
+                              }
+                              final difference =
+                                  valid!.difference(quote!).inDays;
+
+                              validDateAndQuotationDateController.text =
+                                  difference.toString();
+                            });
                           },
                         )
                       : SizedBox(),
@@ -132,8 +155,8 @@ class _CorrespondenceScreenState extends State<CorrespondenceScreen> {
     super.dispose();
   }
 
-  Future<Null> _selectDate(
-      BuildContext context, TextEditingController dateController) async {
+  Future<Null> _selectDate(BuildContext context,
+      TextEditingController dateController, String title) async {
     final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: selectedDate,
@@ -145,6 +168,7 @@ class _CorrespondenceScreenState extends State<CorrespondenceScreen> {
         selectedDate = picked;
         String testT = selectedDate.toString();
         DateTime userStartDate = DateTime.parse(testT);
+
         dateController.text = formattedDateString(userStartDate);
       });
   }
@@ -226,19 +250,11 @@ class _CorrespondenceScreenState extends State<CorrespondenceScreen> {
                                       quotationNoController, false),
                                   textField('Quotation Date',
                                       quotationDateController, true),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      textField(
-                                          'Validity Date',
-                                          validDateAndQuotationDateController,
-                                          false),
-                                      SizedBox(width: 30),
-                                      textField('', validDateController, true),
-                                    ],
-                                  ),
+                                  textField(
+                                      '',
+                                      validDateAndQuotationDateController,
+                                      false),
+                                  textField('', validDateController, true),
                                   textField('Quotation Type',
                                       quotationTypeController, false),
                                   textField('Quote Title',
@@ -375,8 +391,25 @@ class _CorrespondenceScreenState extends State<CorrespondenceScreen> {
                                     quotationNoController, false),
                                 textField('Quotation Date',
                                     quotationDateController, true),
-                                textField(
-                                    'Validity Date', validDateController, true),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      flex: 3,
+                                      child: textField('Validity Date',
+                                          validDateController, true),
+                                    ),
+                                    Expanded(
+                                      flex: 2,
+                                      child: textField(
+                                          '',
+                                          validDateAndQuotationDateController,
+                                          false),
+                                    )
+                                  ],
+                                ),
                                 textField('Quotation Type',
                                     quotationTypeController, false),
                                 textField('Quote Title',
